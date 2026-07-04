@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>redgpt</title>
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<header>
+  <h1>red<span class="accent">gpt</span></h1>
+  <div class="legend">
+    <span class="chip ok">certain</span>
+    <span class="chip warn">wobbly</span>
+    <span class="chip bad">shaky</span>
+    <span class="chip unknown">unknown</span>
+    <span class="chip pending">checking…</span>
+  </div>
+  <select id="backend" title="Which engine + probability method to use">
+    <option value="claude">claude · probes</option>
+    <option value="openai">openai · logprobs</option>
+  </select>
+  <button id="reset" title="New chat">new chat</button>
+</header>
+<main id="chat"></main>
+<footer>
+  <div class="hint">click a colored word to see alternatives &amp; branch</div>
+  <div class="inputrow">
+    <input id="input" type="text" placeholder="Say something…" autocomplete="off" />
+    <button id="send">send</button>
+  </div>
+</footer>
+<div id="popover" class="hidden"></div>
+<script src="/app.js"></script>
+</body>
+</html>
