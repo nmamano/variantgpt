@@ -1,4 +1,4 @@
-# redgpt
+# VariantGPT
 
 Chat UI where every word of the answer is colored by how probable it was —
 white = certain, amber = wobbly, red = shaky. Click a colored word to see the

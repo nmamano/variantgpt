@@ -72,6 +72,7 @@ main {
 .w { border-radius: 4px; padding: 0 1px; }
 .w.pending { color: var(--dim); animation: shimmer 1.2s infinite; }
 .w.unknown { color: var(--dim); border-bottom: 1px dotted var(--dim); }
+.w.plain { color: var(--text); }
 .w.ok { color: var(--ok); }
 .w.warn1 { color: var(--warn1); }
 .w.warn2 { color: var(--warn2); }

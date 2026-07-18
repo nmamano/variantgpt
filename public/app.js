@@ -13,6 +13,21 @@ const state = { messages: [] };
 const vidIndex = new Map(); // vid -> {mi, vi}
 const streams = new Map(); // vid -> EventSource
 
+const OPENAI_HIGHLIGHT_N = 3; // only highlight the N shakiest words in gpt view
+
+// For the openai backend: indices of the N lowest-probability words
+// (that are actually ambiguous). Returns null for the claude backend.
+function computeHi(v) {
+  if (!v || v.backend !== "openai") return null;
+  const idx = v.words
+    .map((w, i) => ({ i, p: w.prob }))
+    .filter((x) => x.p != null && x.p < 0.9)
+    .sort((a, b) => a.p - b.p)
+    .slice(0, OPENAI_HIGHLIGHT_N)
+    .map((x) => x.i);
+  return new Set(idx);
+}
+
 function confClass(w) {
   if (!w.done) return "pending";
   if (w.prob != null) {
@@ -49,8 +64,11 @@ function renderWord(mi, vi, i, w) {
 }
 
 function applyWord(span, w, mi, vi, i) {
-  const cls = confClass(w);
-  const clickable = w.alts && w.alts.length > 0;
+  const v = state.messages[mi].versions[vi];
+  const limited = v.backend === "openai"; // gpt view: only highlight top-N shaky words
+  const highlighted = !limited || (v.hi && v.hi.has(i));
+  const cls = highlighted ? confClass(w) : "plain";
+  const clickable = highlighted && w.alts && w.alts.length > 0;
   span.className = `w ${cls}${clickable ? " clickable" : ""}`;
   span.title = wordTitle(w);
   span.onclick = clickable ? (ev) => showPopover(ev, mi, vi, i) : null;
@@ -67,6 +85,7 @@ function renderMessage(mi) {
   }
   const vi = m.cur;
   const v = m.versions[vi];
+  v.hi = computeHi(v);
   const body = document.createElement("div");
   body.className = "body";
   v.words.forEach((w, i) => {

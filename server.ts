@@ -1,4 +1,4 @@
-// redgpt — chat where words are colored by how "probable" they are.
+// VariantGPT — chat where words are colored by how "probable" they are.
 // Since the Claude subscription gives no logprobs, we estimate confidence by
 // sampling: K probe calls predict the continuation at each point of the answer;
 // agreement with the actual answer = confidence, divergent probes = alternatives.
@@ -570,4 +570,4 @@ const server = Bun.serve({
   },
 });
 
-console.log(`redgpt listening on http://0.0.0.0:${server.port} (model: ${MODEL}, K=${K}, stride=${STRIDE})`);
+console.log(`VariantGPT listening on http://0.0.0.0:${server.port} (model: ${MODEL}, K=${K}, stride=${STRIDE})`);
