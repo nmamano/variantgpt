@@ -1,17 +1,39 @@
 # VariantGPT
 
-Chat UI where every word of the answer is colored by how probable it was —
+Chat UI where every word of the answer is colored by how probable it was -
 white = certain, amber = wobbly, red = shaky. Click a highlighted word to see
 the alternatives the model considered (each with a live-generated preview of
 where it leads) and branch the reply from that point.
 
-Motivation: the low-probability words are where to look — that is where the
+![The VariantGPT interface](docs/interface.png)
+
+Motivation: the low-probability words are where to look. That is where the
 model was choosing among options, and where a hallucination is most likely to
 hide. (Caveat: low probability often just means stylistic freedom, e.g.
 "vibrant" vs "beautiful", not an error.)
 
 Powered by OpenAI logprobs: one API call returns the answer plus exact
 per-token probabilities and the top alternatives, so coloring is instant.
+
+## Changing a word, in three steps
+
+**1. The least-certain words are highlighted.** Hover any of them to see its
+exact probability. Here "concept" was only 0.8% likely, so the model was
+wide open about how to phrase this.
+
+![Highlighted words with a probability tooltip](docs/1-highlight.png)
+
+**2. Click it to see the alternatives the model considered** - each with its
+probability and a preview of where that choice would lead. The model actually
+preferred "importance" (88%); "concept" was a long shot.
+
+![The alternatives menu with previews](docs/2-alternatives.png)
+
+**3. Pick one and the reply regenerates from that choice** as a new branch.
+Here "idea" was chosen, and the rest of the answer rewrote itself around it.
+The `‹ ›` control navigates between branches.
+
+![The regenerated branch](docs/3-branch.png)
 
 ## Run
 
