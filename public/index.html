@@ -13,13 +13,12 @@
     <span class="chip ok">certain</span>
     <span class="chip warn">wobbly</span>
     <span class="chip bad">shaky</span>
-    <span class="chip unknown">unknown</span>
-    <span class="chip pending">checking…</span>
   </div>
-  <select id="backend" title="Which engine + probability method to use">
-    <option value="claude">claude · probes</option>
-    <option value="openai">openai · logprobs</option>
-  </select>
+  <label class="slider" title="How many of the least-certain words to highlight">
+    highlight <b id="threshVal">3</b>
+    <input id="thresh" type="range" min="0" max="20" value="3" />
+    words
+  </label>
   <button id="reset" title="New chat">new chat</button>
 </header>
 <main id="chat"></main>

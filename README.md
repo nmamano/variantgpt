@@ -1,19 +1,17 @@
 # VariantGPT
 
 Chat UI where every word of the answer is colored by how probable it was —
-white = certain, amber = wobbly, red = shaky. Click a colored word to see the
-alternatives the model considered and branch the reply from that point.
+white = certain, amber = wobbly, red = shaky. Click a highlighted word to see
+the alternatives the model considered (each with a live-generated preview of
+where it leads) and branch the reply from that point.
 
-Motivation: uncertain words are where to look for hallucinations.
+Motivation: the low-probability words are where to look — that is where the
+model was choosing among options, and where a hallucination is most likely to
+hide. (Caveat: low probability often just means stylistic freedom, e.g.
+"vibrant" vs "beautiful", not an error.)
 
-## Two selectable backends (header dropdown)
-
-| | `claude · probes` | `openai · logprobs` |
-|---|---|---|
-| Auth | Claude subscription (headless `claude -p`, Haiku) | `OPENAI_API_KEY` in `.env` |
-| Probabilities | Estimated by sampling: K probe calls predict each stretch of the answer; agreement = confidence (Anthropic exposes no logprobs) | Exact per-token probabilities from `logprobs: true` |
-| Alternatives | Divergent probe continuations — word + rest of sentence | Top alternative tokens with exact % |
-| Speed | Slow (many model calls, bounded by 90s deadline + call budget) | Instant (single call) |
+Powered by OpenAI logprobs: one API call returns the answer plus exact
+per-token probabilities and the top alternatives, so coloring is instant.
 
 ## Run
 
@@ -21,21 +19,28 @@ Motivation: uncertain words are where to look for hallucinations.
 bun run server.ts   # http://0.0.0.0:4777
 ```
 
-For the openai backend, put `OPENAI_API_KEY=sk-...` in `~/nil/redgpt/.env`
-(picked up per-request, no restart needed). Optional: `OPENAI_MODEL=...`
+Put `OPENAI_API_KEY=sk-...` in `~/nil/variantgpt/.env` (read per-request, so no
+restart needed when you add or change it). Optional: `OPENAI_MODEL=...`
 (default `gpt-4o-mini`).
 
-## How the claude sampling estimator works
+## How it works
 
-1. Generate the full answer normally (one call).
-2. Fire "anchor" probes every 9 words, each predicting the next ~18 words
-   (2 probes per anchor). Compare probe output word-by-word against the real
-   answer until first divergence — one matching stretch confirms many words in
-   one call; a divergence marks the word and its alternative continuation.
-3. Uncovered positions get shallow follow-up probes, all pipelined,
-   under a hard call budget (20) and wall-clock deadline (90s); per-call 22s
-   timeout so a stalled call can't hog a slot. Leftovers render as dotted
-   "unknown". A stop button halts probing for a reply.
+1. **Generate** — one chat completion with `logprobs: true, top_logprobs: 8`.
+2. **Color** — subword tokens are reassembled into words; a word's probability
+   is the min over its tokens. The header slider picks how many of the
+   least-certain words to highlight (the rest render as plain text).
+3. **Preview** — opening a word's menu fires one short continuation per
+   alternative (`/api/preview`) so you can see where each variant would go
+   before committing. Results are cached on the alternative.
+4. **Branch** — picking an alternative regenerates the tail from that choice
+   (`/api/branch`) as a new version; `‹ ›` navigates between branches. The
+   swapped-in word keeps its siblings, so you can re-open it and pick again.
 
-Branching regenerates the tail after the chosen alternative and re-probes only
-the new part; each reply keeps a navigable list of branches (‹ ›).
+## Endpoints
+
+- `POST /api/message` `{text}` → `{vid, words}`
+- `POST /api/preview` `{vid, pos, token}` → `{preview}`
+- `POST /api/branch` `{vid, pos, phrase, prob}` → `{vid, words}`
+- `POST /api/reset`, `GET /api/state`
+
+`word = {text, prob, alts:[{phrase, prob, preview?}]}`

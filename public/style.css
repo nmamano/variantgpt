@@ -29,14 +29,18 @@ header {
 }
 header h1 { font-size: 20px; letter-spacing: 1px; }
 header h1 .accent { color: var(--accent); }
-.legend { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; }
+.legend { display: flex; gap: 8px; flex-wrap: wrap; }
 .chip { font-size: 11px; padding: 1px 8px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--border); }
 .chip.ok { color: var(--ok); }
 .chip.warn { color: var(--warn2); }
 .chip.bad { color: var(--bad); }
-.chip.unknown { color: var(--dim); border-style: dotted; }
-.chip.pending { color: var(--dim); animation: shimmer 1.2s infinite; }
-#reset, #backend {
+.slider {
+  display: flex; align-items: center; gap: 6px; flex: 1;
+  font-size: 12px; color: var(--dim);
+}
+.slider b { color: var(--text); min-width: 14px; text-align: right; }
+.slider input[type="range"] { width: 120px; accent-color: var(--accent); cursor: pointer; }
+#reset {
   background: var(--panel2); color: var(--dim); border: 1px solid var(--border);
   border-radius: 8px; padding: 4px 10px; cursor: pointer; font-size: 12px;
 }
@@ -106,14 +110,16 @@ footer {
   position: absolute; z-index: 50; background: var(--panel2);
   border: 1px solid var(--border); border-radius: 10px;
   box-shadow: 0 8px 30px rgba(0,0,0,.5);
-  max-width: 340px; padding: 6px; font-size: 14px;
+  max-width: 360px; padding: 6px; font-size: 14px;
 }
 #popover.hidden { display: none; }
-#popover .title { font-size: 11px; color: var(--dim); padding: 4px 8px; }
+#popover .title { font-size: 11px; color: var(--dim); padding: 4px 8px 6px; }
 #popover .alt {
-  padding: 6px 8px; border-radius: 8px; cursor: pointer; line-height: 1.4;
+  padding: 7px 8px; border-radius: 8px; cursor: pointer; line-height: 1.35;
 }
 #popover .alt:hover { background: #2c313d; }
+#popover .alt .althead { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 #popover .alt b { color: var(--warn1); }
-#popover .alt .rest { color: var(--dim); }
-#popover .alt .count { color: var(--dim); font-size: 11px; margin-left: 6px; }
+#popover .alt .count { color: var(--dim); font-size: 11px; }
+#popover .alt .preview { color: var(--dim); font-size: 12.5px; margin-top: 2px; font-style: italic; }
+#popover .alt .preview.loading { opacity: .55; animation: shimmer 1.2s infinite; }
